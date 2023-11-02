@@ -10,6 +10,7 @@ const btnOnOffMusic = document.querySelector('#alternar-musica');
 const btnStartPause = document.querySelector('#start-pause');
 const btnPauseCount = document.querySelector('#start-pause span');
 const imgPauseCount = document.querySelector('#start-pause img');
+const btnZerarCount = document.querySelector('#zerar-count');
 const music = new Audio('/sons/luna-rise-part-one.mp3');
 const play = new Audio('/sons/play.wav');
 const pause = new Audio('/sons/pause.mp3');
@@ -32,19 +33,30 @@ btnFoco.addEventListener('click', () => {
     temporizador = 1500;
     alteraTelaInicial('foco');
     btnFoco.classList.add('active');
+    btnZerarCount.classList.add('disabled');
 })
 
 btnCurto.addEventListener('click', () => {
     temporizador = 300;
     alteraTelaInicial('descanso-curto');
     btnCurto.classList.add('active');
+    btnZerarCount.classList.add('disabled');
 })
 
 btnLongo.addEventListener('click', () => {
     temporizador = 900;
     alteraTelaInicial('descanso-longo');
     btnLongo.classList.add('active');
+    btnZerarCount.classList.add('disabled');
 })
+
+btnZerarCount.addEventListener('click', () => {
+    stopZeraContador();
+    btnZerarCount.classList.add('disabled');
+    temporizador = 1500;
+    alteraTelaInicial('foco');
+    btnFoco.classList.add('active');
+});
 
 function alteraTelaInicial(contexto) {
     mostrarTempoTela();
@@ -75,6 +87,7 @@ const contagemTemporizador = () => {
     if (temporizador <= 0) {
         beep.play();
         alert("Tempo esgotado!!!");
+        btnZerarCount.classList.add('disabled');
         btnPauseCount.textContent = "Começar";
         imgPauseCount.setAttribute('src', '/imagens/play_arrow.png');
         zerarContador();
@@ -99,11 +112,22 @@ function iniciarPausarContador() {
     tempoInicial = setInterval(contagemTemporizador, 1000); //tempo em milisegundos
     btnPauseCount.textContent = "Pausar";
     imgPauseCount.setAttribute('src', '/imagens/pause.png');
+    btnZerarCount.classList.remove('disabled');
 }
 
 function zerarContador() {
     clearInterval(tempoInicial);
     tempoInicial = null;
+}
+
+function stopZeraContador() {
+    if(tempoInicial) {
+        pause.play();
+        btnPauseCount.textContent = "Começar";
+        imgPauseCount.setAttribute('src', '/imagens/play_arrow.png');
+        zerarContador();
+        return;
+    }
 }
 
 function mostrarTempoTela() {
