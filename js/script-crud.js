@@ -62,12 +62,15 @@ formTask.addEventListener('submit', (evento) => {
     btnAddNewTask.classList.toggle('hidden')
 })
 
-btnCancelTask.addEventListener('click', ()=> {
+btnCancelTask.addEventListener('click', () => {
     textArea.value = ""
     formTask.classList.toggle('hidden')
     btnAddNewTask.classList.toggle('hidden')
 })
 
-btnCleanTask.addEventListener('click', ()=> {
+btnCleanTask.addEventListener('click', () => {
     textArea.value = ""
 })
+
+localStorage.setItem('quantidade', 10)
+console.log(localStorage.getItem('quantidade'))
