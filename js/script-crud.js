@@ -5,17 +5,15 @@ const formLabel = document.querySelector('.app__form-label')
 const textArea = document.querySelector('.app__form-textarea')
 const btnSaveTask = document.querySelector('.app__form-footer__button--confirm')
 const btnCancelTask = document.querySelector('.app__form-footer__button--cancel')
-const btnCleanTask = document.querySelector('.app__form-footer__button--delete')
-const btnConcludedTask = document.querySelector('#btn-remover-concluidas')
+const btnCleanConcludedTask = document.querySelector('#btn-remover-concluidas')
 const btnTrashAllTasks = document.querySelector('#btn-remover-todas')
 const taskDescriptionActive = document.querySelector('.app__section-active-task-description')
 
 const imgIconSvg = `
 <svg class="app__section-task-icon-status" width="24" height="24" viewBox="0 0 24 24"
-fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="12" cy="12" r="12" fill="#FFF" />
-<path d="M9 16.1719119.5938 5.57812121 6.9843819 18.9844L3.42188 13.4062L4.82812 12L19 16.17192" 
-fill="#01080E"/>
+    fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="12" fill="#FFF" />
+    <path d="M9 16.1719L19.5938 5.57812L21 6.98438L9 18.9844L3.42188 13.4062L4.82812 12L9 16.1719Z" fill="#01080E" />
 </svg>`
 
 /* const imgIconSvg = `
@@ -34,6 +32,10 @@ let taskEdition = null
 let paragraphEdition = null
 
 const selectionTasks = (task, elem) => {
+    
+    if (task.concluded) {
+        return
+    }
     document.querySelectorAll('.app__section-task-list-item-active').forEach(function (button) {
         button.classList.remove('app__section-task-list-item-active')
     })
@@ -84,13 +86,12 @@ function createTask(task) {
     paragraph.textContent = task.description
 
     const btnTaskOk = document.createElement('button')
-
     const btnTaskEdit = document.createElement('button')
+    const btnDeleteTask = document.createElement('button')
 
     btnTaskEdit.classList.add('app_button-edit')
     const editIcon = document.createElement('img')
     editIcon.setAttribute('src', '/imagens/edit.png')
-
     btnTaskEdit.appendChild(editIcon)
 
     btnTaskEdit.addEventListener('click', (event) => {
@@ -98,14 +99,42 @@ function createTask(task) {
         selectedTaskEdition(task, paragraph)
     })
 
+    btnDeleteTask.classList.add('app_button-delete')
+    const deleteIcon = document.createElement('img')
+    deleteIcon.setAttribute('src', '/imagens/delete.png')
+    btnDeleteTask.appendChild(deleteIcon)
+
+    btnDeleteTask.addEventListener('click', (event) => {
+        event.stopPropagation()
+        if (selectedTask) {
+            const index = tasks.indexOf(selectedTask)
+            if (index != -1) {
+                tasks.splice(index, 1)
+            }
+            itemSelectedTasks.classList.add('app__section-task-list-item-active')
+            itemSelectedTasks.remove()
+            taskDescriptionActive.textContent = ''
+            tasks.filter(t => t != selectedTask)
+            itemSelectedTasks = null
+            selectedTask = null
+            updateLocalStorage()
+        }
+    })
+
     li.onclick = () => {
         selectionTasks(task, li)
     }
 
     svgIcon.addEventListener('click', (event) => {
-        event.stopPropagation()
-        btnTaskOk.setAttribute('disabled', true)
-        li.classList.add('app__section-task-list-item-complete')
+        if (task == selectedTask) {
+            event.stopPropagation()
+            btnTaskOk.setAttribute('disabled', true)
+            li.classList.add('app__section-task-list-item-complete')
+            selectedTask.concluded = true
+            taskDescriptionActive.textContent = ''
+            selectedTask = null
+            updateLocalStorage()
+        }
     })
 
 
@@ -117,6 +146,7 @@ function createTask(task) {
     li.appendChild(svgIcon)
     li.appendChild(paragraph)
     li.appendChild(btnTaskEdit)
+    li.appendChild(btnDeleteTask)
     return li
 }
 
@@ -160,16 +190,29 @@ btnCancelTask.addEventListener('click', () => {
     btnAddNewTask.classList.toggle('hidden')
 })
 
-btnCleanTask.addEventListener('click', () => {
-    textArea.value = ""
-})
+btnCleanConcludedTask.addEventListener('click', () => {
 
-btnConcludedTask.addEventListener('click', () => {
-    alert("limpa concluded tasks")
+    document.querySelectorAll('.app__section-task-list-item-complete').forEach((element) => {
+        element.remove();
+    });
+
+    tasks = tasks.filter(t => !t.concluded)
+    updateLocalStorage()
+    
 })
 
 btnTrashAllTasks.addEventListener('click', () => {
-    //alert("limpa all tasks")
     tasksListContainer.remove()
-    localStorage.clear()
+    updateLocalStorage()
+})
+
+document.addEventListener('TaskConcluded', function (e) {
+    if (selectedTask) {
+        selectedTask.concluded = true
+        taskDescriptionActive.textContent = ''
+        selectedTask = null
+        itemSelectedTasks.classList.add('app__section-task-list-item-complete')
+        itemSelectedTasks.querySelector('button').setAttribute('disabled', true)
+        updateLocalStorage()
+    }
 })

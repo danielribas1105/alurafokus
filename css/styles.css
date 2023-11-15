@@ -258,6 +258,7 @@ h6 {
 }
 
 .app_button-edit,
+.app_button-delete,
 .app_button-more {
     border: none;
     cursor: pointer;
@@ -324,7 +325,7 @@ h6 {
     font-size: 1.8rem;
     font-style: normal;
     font-weight: 600;
-    line-height: 150%; 
+    line-height: 150%;
     font-family: Montserrat;
 }
 
@@ -477,7 +478,7 @@ h6 {
 }
 
 .app__section-task-header__ul:hover,
-.app_button-more:hover ~ .app__section-task-header__ul {
+.app_button-more:hover~.app__section-task-header__ul {
     display: block;
     text-align: right;
     border-radius: 0.8rem;

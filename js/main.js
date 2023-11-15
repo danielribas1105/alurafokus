@@ -16,7 +16,7 @@ const play = new Audio('/sons/play.wav');
 const pause = new Audio('/sons/pause.mp3');
 const beep = new Audio('/sons/beep.mp3');
 music.loop = true;
-let temporizador = 1500;
+let temporizador = 3;
 let tempoInicial = null;
 
 btnOnOffMusic.addEventListener('change', () => {
@@ -30,7 +30,7 @@ btnOnOffMusic.addEventListener('change', () => {
 })
 
 btnFoco.addEventListener('click', () => {
-    temporizador = 1500;
+    temporizador = 3;
     alteraTelaInicial('foco');
     btnFoco.classList.add('active');
     btnZerarCount.classList.add('disabled');
@@ -86,12 +86,33 @@ function alteraTelaInicial(contexto) {
 const contagemTemporizador = () => {
     if (temporizador <= 0) {
         beep.play();
-        alert("Tempo esgotado!!!");
         btnZerarCount.classList.add('disabled');
         btnPauseCount.textContent = "Começar";
         imgPauseCount.setAttribute('src', '/imagens/play_arrow.png');
         zerarContador();
-        temporizador = 5;
+        //debugger
+        const activeFocus = html.getAttribute('data-contexto') === 'foco'
+        if (activeFocus) {
+            var event = new CustomEvent('TaskConcluded', {
+                detail: {
+                    message: "A tarefa foi concluída com sucesso!",
+                    time: new Date()
+                },
+                bubbles: true,
+                cancelable: true
+            });
+            document.dispatchEvent(event);
+            temporizador = 5
+            mostrarTempoTela()
+        }
+
+
+        /* alert("Tempo esgotado!!!");
+        btnZerarCount.classList.add('disabled');
+        btnPauseCount.textContent = "Começar";
+        imgPauseCount.setAttribute('src', '/imagens/play_arrow.png');
+        zerarContador();
+        temporizador = 5; */
         return;
     }
     temporizador -= 1;
@@ -121,7 +142,7 @@ function zerarContador() {
 }
 
 function stopZeraContador() {
-    if(tempoInicial) {
+    if (tempoInicial) {
         pause.play();
         btnPauseCount.textContent = "Começar";
         imgPauseCount.setAttribute('src', '/imagens/play_arrow.png');
