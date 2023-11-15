@@ -6,6 +6,8 @@ const textArea = document.querySelector('.app__form-textarea')
 const btnSaveTask = document.querySelector('.app__form-footer__button--confirm')
 const btnCancelTask = document.querySelector('.app__form-footer__button--cancel')
 const btnCleanTask = document.querySelector('.app__form-footer__button--delete')
+const btnConcludedTask = document.querySelector('#btn-remover-concluidas')
+const btnTrashAllTasks = document.querySelector('#btn-remover-todas')
 const taskDescriptionActive = document.querySelector('.app__section-active-task-description')
 
 const imgIconSvg = `
@@ -57,7 +59,6 @@ const limparForm = () => {
 }
 
 const selectedTaskEdition = (task, element) => {
-
     if (taskEdition == task) {
         limparForm()
         return
@@ -66,8 +67,8 @@ const selectedTaskEdition = (task, element) => {
     formLabel.textContent = "Editar Tarefa"
     taskEdition = task
     paragraphEdition = element
-    formTask.classList.toggle('hidden')
     textArea.value = task.description
+    formTask.classList.toggle('hidden')
 }
 
 function createTask(task) {
@@ -137,9 +138,8 @@ const updateLocalStorage = () => {
 formTask.addEventListener('submit', (evento) => {
     evento.preventDefault()
     if (taskEdition) {
-        //debugger
         taskEdition.description = textArea.value
-        paragraphEdition.description = textArea.value
+        paragraphEdition.textContent = textArea.value
     } else {
         const task = {
             description: textArea.value,
@@ -148,9 +148,7 @@ formTask.addEventListener('submit', (evento) => {
         tasks.push(task)
         const createItem = createTask(task)
         tasksListContainer.appendChild(createItem)
-        //textArea.value = ""
-        //formTask.classList.toggle('hidden')
-        //btnAddNewTask.classList.toggle('hidden')
+        btnAddNewTask.classList.toggle('hidden')
     }
     updateLocalStorage()
     limparForm()
@@ -164,4 +162,14 @@ btnCancelTask.addEventListener('click', () => {
 
 btnCleanTask.addEventListener('click', () => {
     textArea.value = ""
+})
+
+btnConcludedTask.addEventListener('click', () => {
+    alert("limpa concluded tasks")
+})
+
+btnTrashAllTasks.addEventListener('click', () => {
+    //alert("limpa all tasks")
+    tasksListContainer.remove()
+    localStorage.clear()
 })
